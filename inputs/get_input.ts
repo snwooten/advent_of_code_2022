@@ -20,12 +20,15 @@ function buildFileName(day: string): string {
 
 export function getInput(day: string): void {
     const inputExists = checkIfInputExists(day);
-
+    const COOKIE = null;
+    if (!COOKIE) {
+        throw new Error('Get your cookie');
+    }
     if (!inputExists) {
         const url = buildInputUrl(day);
         fetch(url, {
         headers: {
-            "cookie": process.env.COOKIE,
+            "cookie": COOKIE,
             "User-Agent": "https://github.com/snwooten/advent_of_code_2022 by snwooten@gmail.com",
         },
         })
@@ -38,7 +41,7 @@ export function getInput(day: string): void {
         })
         .then((body) => {
             const fileName = buildFileName(day);
-            writeFileSync(`./day_${day}_input.txt`, body.replace(/\n$/, ""))
+            writeFileSync(fileName, body.replace(/\n$/, ""))
             console.log('SAVED!');
         })
         .catch((exception) => {
