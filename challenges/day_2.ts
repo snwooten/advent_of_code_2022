@@ -20,89 +20,45 @@ const input = textToArray('day_2_input.txt');
 
 type RPCChoice = 'A'| 'B' | 'C';
 
-const points = {
+const optionPoints = {
     A: 1,
     B: 2,
     C: 3,
+    X: 1,
+    Y: 2,
+    Z: 3,
 }
-function getMyChoice(oppChoice: RPCChoice, winLoseDraw: 'X'| 'Y' | 'Z'): RPCChoice {
-    let myChoice = '' as RPCChoice;
-    if (winLoseDraw === 'X') {
-        if (oppChoice === 'A') myChoice = 'C';
-        if (oppChoice === 'B') myChoice = 'A';
-        if (oppChoice === 'C') myChoice = 'B';
-   }
-    if (winLoseDraw === 'Y') {
-        if (oppChoice === 'A') myChoice = 'A';
-        if (oppChoice === 'B') myChoice = 'B';
-        if (oppChoice === 'C') myChoice = 'C';
-    }
-    if (winLoseDraw === 'Z') {
-        if (oppChoice === 'A') myChoice = 'B';
-        if (oppChoice === 'B') myChoice = 'C';
-        if (oppChoice === 'C') myChoice = 'A';
-    }
-    
-    return myChoice;
+
+const myPoints = {
+    X: {C: 6, A: 3, B: 0},
+    Y: {A: 6, B: 3, C: 0},
+    Z: {B: 6, C: 3, A: 0},
 }
+
+const winLoseDrawPoints = {
+    X: 0,
+    Y: 3,
+    Z: 6,
+}
+
+const winLoseDrawOptions = {
+    X: {A: 'C', B: 'A', C: 'B'},
+    Y: {A: 'A', B: 'B', C: 'C'},
+    Z: {A: 'B', B: 'C', C: 'A'},
+}
+
 
 function getPlayerPointsForRound(round:string[], player: number): number {
     let playerChoice = round[player];
     let oppChoice = player === 1 ? round[0] : round[1];
-    let playerPoints = 0;
-    
-    switch(playerChoice) {
-        case 'A':
-            playerPoints += 1
-            playerPoints += oppChoice === 'Z' ? 6 : 0;
-            playerPoints += oppChoice === 'X' ? 3 : 0;
-            break;
-
-         case 'B':
-            playerPoints += 2
-            playerPoints += oppChoice === 'X' ? 6 : 0;
-            playerPoints += oppChoice === 'Y' ? 3 : 0;
-            break;
-
-        case 'C':
-            playerPoints += 3
-            playerPoints += oppChoice === 'Y' ? 6 : 0;
-            playerPoints += oppChoice === 'Z' ? 3 : 0;
-            break;
-
-        case 'X':
-            playerPoints += 1
-            playerPoints += oppChoice === 'C' ? 6 : 0;
-            playerPoints += oppChoice === 'A' ? 3 : 0;
-            break;
-        
-        case 'Y':
-            playerPoints += 2
-            playerPoints += oppChoice === 'A' ? 6 : 0;
-            playerPoints += oppChoice === 'B' ? 3 : 0;
-            break;
-
-        case 'Z':
-            playerPoints += 3
-            playerPoints += oppChoice === 'B' ? 6 : 0;
-            playerPoints += oppChoice === 'C' ? 3 : 0;
-            break;
-    }
+    let playerPoints = 
+    optionPoints[playerChoice] + myPoints[playerChoice][oppChoice];
     
     return playerPoints;
 }
 
 function getMyPoints(winLoseDraw: 'X'| 'Y' | 'Z', myChoice: RPCChoice): number {
-    let pointTotal = 0;
-    if (winLoseDraw === 'X') {
-        pointTotal += points[myChoice];
-    }
-    if (winLoseDraw === 'Y') {
-        pointTotal += 3 + points[myChoice];
-    }
-    if (winLoseDraw === 'Z') {
-        pointTotal += 6 + points[myChoice];
-    }
+    const pointTotal = optionPoints[myChoice] + winLoseDrawPoints[winLoseDraw];
 
     return pointTotal;
 }
@@ -115,12 +71,14 @@ function findMyRPSScore(): { myTotalRound1: number, myTotalRound2: number } {
     for (let i = 0; i < input.length; i++) {
        // const round = input[i]; // for testing
        const round = stringToArray(input[i], ' ');
+
        myTotalRound1 += getPlayerPointsForRound(round, 1);
-       const myChoice = getMyChoice(round[0], round[1]);
+
+       const myChoice = winLoseDrawOptions[round[1]][round[0]];
        myTotalRound2 += getMyPoints(round[1], myChoice);
     }
-    console.log('myTotalRound1: ', myTotalRound1);
-    console.log('myTotalRound2: ', myTotalRound2);
+
+    console.log({ myTotalRound1, myTotalRound2 });
     return {myTotalRound1, myTotalRound2};
 }
 
