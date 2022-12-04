@@ -51,4 +51,4 @@ export function getInput(day: string): void {
 
 }
 
-getInput('2');
+getInput('4');
